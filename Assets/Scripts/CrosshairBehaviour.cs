@@ -5,12 +5,13 @@ using UnityEngine.UI;
 
 public class CrosshairBehaviour : MonoBehaviour
 {
-    public PlayerFunctions PlayerObject; // Reference to the PlayerFunctions script
-    public Sprite[] sprites; // Array of sprites for the spritesheet
-    private Image image; // Reference to the Image component
-    private float spriteChangeTime; // The time when the sprite last changed
-    private int index; // The current index of the sprite
-    private int direction = 1; // The direction of the sprite animation (1 for forward, -1 for reverse)
+    public Camera mainCamera; 
+    public PlayerFunctions PlayerObject; 
+    public Sprite[] sprites; 
+    private Image image; 
+    private float spriteChangeTime; 
+    private int index; 
+    private int direction = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +26,7 @@ public class CrosshairBehaviour : MonoBehaviour
     void Update()
     {
         // Check if the raycast from the camera hits a collectable item
-        if (PlayerObject.IsCameraRaycastHittingCollectable())
+        if (CanGetCollectable())
         {
             direction = 1;
         }
@@ -43,4 +44,19 @@ public class CrosshairBehaviour : MonoBehaviour
             image.sprite = sprites[index];
         }
     }
+
+    // Checks if a raycast from the camera is hitting a collectable item within range
+    bool CanGetCollectable()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit) && hit.collider.gameObject.CompareTag("Collectable"))
+        {
+            // Check if the object is within 3 units of the camera
+            if (Vector3.Distance(mainCamera.transform.position, hit.transform.position) <= 3f)
+            {
+                return true;
+            }
+        }
+        return false;
+    } 
 }
